@@ -50,10 +50,38 @@ export default defineConfig({
       name: 'html-rewrite',
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
-          // Remove .html extension from URLs
-          if (req.url && !req.url.includes('.') && !req.url.startsWith('/api') && !req.url.startsWith('/src')) {
-            req.url = req.url === '/' ? '/index.html' : `${req.url}.html`;
+          const url = req.url || '';
+          
+          // Skip if it's an API call, static file, or already has .html
+          if (
+            url.startsWith('/api') ||
+            url.startsWith('/src') ||
+            url.startsWith('/@') ||
+            url.includes('.css') ||
+            url.includes('.js') ||
+            url.includes('.json') ||
+            url.includes('.png') ||
+            url.includes('.jpg') ||
+            url.includes('.jpeg') ||
+            url.includes('.gif') ||
+            url.includes('.svg') ||
+            url.includes('.ico') ||
+            url.includes('.woff') ||
+            url.includes('.woff2') ||
+            url.includes('.ttf') ||
+            url.includes('.eot') ||
+            url.endsWith('.html')
+          ) {
+            return next();
           }
+          
+          // Add .html extension for page routes
+          if (url === '/' || url === '') {
+            req.url = '/index.html';
+          } else if (!url.includes('.')) {
+            req.url = `${url}.html`;
+          }
+          
           next();
         });
       },
