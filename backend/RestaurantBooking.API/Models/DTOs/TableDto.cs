@@ -8,6 +8,7 @@ public class TableDto
     public string TableNumber { get; set; } = string.Empty;
     public int Capacity { get; set; }
     public string? ImageUrl { get; set; }
+    public bool IsActive { get; set; }
 }
 
 public class CreateTableDto
@@ -26,14 +27,14 @@ public class CreateTableDto
 
 public class UpdateTableDto
 {
-    [Required(ErrorMessage = "Table number is required")]
     [MaxLength(10, ErrorMessage = "Table number cannot exceed 10 characters")]
-    public string TableNumber { get; set; } = string.Empty;
+    public string? TableNumber { get; set; }
 
-    [Required(ErrorMessage = "Capacity is required")]
     [Range(1, 100, ErrorMessage = "Capacity must be between 1 and 100")]
-    public int Capacity { get; set; }
+    public int? Capacity { get; set; }
 
     [MaxLength(500, ErrorMessage = "Image URL cannot exceed 500 characters")]
     public string? ImageUrl { get; set; }
+
+    public bool? IsActive { get; set; }
 }

@@ -50,6 +50,27 @@ function showMessage(message, type) {
   }, 5000);
 }
 
+// Show success dialog
+function showSuccessDialog(title, message) {
+  const modal = document.getElementById('successModal');
+  const titleElement = document.getElementById('successTitle');
+  const messageElement = document.getElementById('successMessage');
+  
+  if (!modal || !titleElement || !messageElement) return;
+
+  titleElement.textContent = title;
+  messageElement.textContent = message;
+  modal.style.display = 'flex';
+}
+
+// Close success dialog
+function closeSuccessDialog() {
+  const modal = document.getElementById('successModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
 // Show/hide loading indicator
 function setLoading(isLoading) {
   const loadingIndicator = document.getElementById('loadingIndicator');
@@ -98,11 +119,21 @@ function displayTables(tables) {
 
   sortedTables.forEach(table => {
     const row = document.createElement('tr');
+    const activeClass = table.isActive ? 'checked' : '';
     row.innerHTML = `
       <td>${table.tableNumber}</td>
       <td>${table.capacity} ที่นั่ง</td>
       <td>
+        <label class="switch">
+          <input type="checkbox" class="toggle-active" data-table-id="${table.id}" ${activeClass}>
+          <span class="slider"></span>
+        </label>
+      </td>
+      <td>
         <div class="table-actions">
+          <button type="button" class="btn btn-primary" data-table-id="${table.id}" data-table-number="${table.tableNumber}" style="background: #3498db;">
+            📋 ดูรายละเอียด
+          </button>
           <button type="button" class="btn btn-edit" data-table-id="${table.id}">
             แก้ไข
           </button>
@@ -113,6 +144,18 @@ function displayTables(tables) {
       </td>
     `;
     tableBody.appendChild(row);
+  });
+
+  // Add event listeners for toggle switches
+  const toggleSwitches = document.querySelectorAll('.toggle-active');
+  toggleSwitches.forEach(toggle => {
+    toggle.addEventListener('change', handleToggleActive);
+  });
+
+  // Add event listeners for view details buttons
+  const detailButtons = document.querySelectorAll('.btn-primary[data-table-id]');
+  detailButtons.forEach(button => {
+    button.addEventListener('click', handleViewTableDetails);
   });
 
   // Add event listeners
@@ -220,6 +263,114 @@ function closeDeleteModal() {
   tableToDelete = null;
 }
 
+// Handle view table details
+async function handleViewTableDetails(event) {
+  const button = event.target;
+  const tableId = parseInt(button.getAttribute('data-table-id'));
+  const tableNumber = button.getAttribute('data-table-number');
+
+  if (!tableId) return;
+
+  try {
+    setLoading(true);
+    const bookings = await apiClient.getTableBookings(tableId);
+    showTableDetailsModal(tableNumber, bookings);
+  } catch (error) {
+    showMessage(`เกิดข้อผิดพลาด: ${error instanceof Error ? error.message : 'ไม่สามารถโหลดข้อมูลได้'}`, 'error');
+  } finally {
+    setLoading(false);
+  }
+}
+
+// Show table details modal
+function showTableDetailsModal(tableNumber, bookings) {
+  const modal = document.getElementById('tableDetailsModal');
+  const detailTableNumber = document.getElementById('detailTableNumber');
+  const container = document.getElementById('tableBookingsContainer');
+
+  if (!modal || !detailTableNumber || !container) return;
+
+  detailTableNumber.textContent = tableNumber;
+
+  if (bookings.length === 0) {
+    container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 20px;">ยังไม่มีการจองสำหรับโต๊ะนี้</p>';
+  } else {
+    container.innerHTML = `
+      <table class="tables-table booking-details-table">
+        <thead>
+          <tr>
+            <th>วันที่</th>
+            <th>เวลา</th>
+            <th>ลูกค้า</th>
+            <th>เบอร์โทร</th>
+            <th>จำนวนคน</th>
+            <th>สถานะ</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${bookings.map(booking => {
+            const statusClass = booking.status === 'confirmed' ? 'status-confirmed' : 'status-cancelled';
+            const statusText = booking.status === 'confirmed' ? 'ยืนยันแล้ว' : 'ยกเลิกแล้ว';
+            
+            // Format date as DD/MM/YYYY
+            const [year, month, day] = booking.bookingDate.split('-');
+            const formattedDate = `${day}/${month}/${year}`;
+            
+            return `
+              <tr>
+                <td>${formattedDate}</td>
+                <td>${booking.timeSlot}</td>
+                <td>${booking.userName}</td>
+                <td>${booking.userPhone || '-'}</td>
+                <td style="text-align: center;">${booking.numberOfGuests} คน</td>
+                <td style="text-align: center;"><span class="${statusClass}">${statusText}</span></td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  modal.style.display = 'flex';
+}
+
+// Close table details modal
+function closeTableDetailsModal() {
+  const modal = document.getElementById('tableDetailsModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+// Handle toggle active status
+async function handleToggleActive(event) {
+  const checkbox = event.target;
+  const tableId = parseInt(checkbox.getAttribute('data-table-id'));
+  const isActive = checkbox.checked;
+
+  try {
+    await apiClient.updateTable(tableId, { isActive });
+    
+    // Update status text
+    const row = checkbox.closest('tr');
+    const statusText = row.querySelector('.status-text');
+    if (statusText) {
+      statusText.textContent = isActive ? 'เปิดใช้งาน' : 'ปิดใช้งาน';
+    }
+    
+    // Show success dialog
+    showSuccessDialog(
+      isActive ? 'เปิดใช้งานโต๊ะสำเร็จ' : 'ปิดใช้งานโต๊ะสำเร็จ',
+      isActive ? 'โต๊ะนี้พร้อมให้บริการแล้ว' : 'โต๊ะนี้ถูกปิดใช้งานแล้ว'
+    );
+  } catch (error) {
+    // Revert checkbox if error
+    checkbox.checked = !isActive;
+    showMessage(`เกิดข้อผิดพลาด: ${error instanceof Error ? error.message : 'ไม่สามารถเปลี่ยนสถานะได้'}`, 'error');
+  }
+}
+
 // Handle form submission
 async function handleFormSubmit(event) {
   event.preventDefault();
@@ -239,11 +390,11 @@ async function handleFormSubmit(event) {
     if (editingTableId) {
       // Update existing table
       await apiClient.updateTable(editingTableId, { tableNumber, capacity });
-      showMessage('แก้ไขโต๊ะสำเร็จ', 'success');
+      showSuccessDialog('แก้ไขโต๊ะสำเร็จ', `โต๊ะ ${tableNumber} ถูกแก้ไขเรียบร้อยแล้ว`);
     } else {
       // Create new table
       await apiClient.createTable({ tableNumber, capacity });
-      showMessage('เพิ่มโต๊ะสำเร็จ', 'success');
+      showSuccessDialog('เพิ่มโต๊ะสำเร็จ', `โต๊ะ ${tableNumber} (${capacity} ที่นั่ง) ถูกเพิ่มเข้าระบบแล้ว`);
     }
 
     resetForm();
@@ -322,6 +473,36 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.addEventListener('click', (event) => {
       if (event.target === modal) {
         closeDeleteModal();
+      }
+    });
+  }
+
+  // Success modal event listeners
+  const closeSuccessBtn = document.getElementById('closeSuccessBtn');
+  if (closeSuccessBtn) {
+    closeSuccessBtn.addEventListener('click', closeSuccessDialog);
+  }
+
+  const successModal = document.getElementById('successModal');
+  if (successModal) {
+    successModal.addEventListener('click', (event) => {
+      if (event.target === successModal) {
+        closeSuccessDialog();
+      }
+    });
+  }
+
+  // Table details modal event listeners
+  const closeDetailsBtn = document.getElementById('closeDetailsBtn');
+  if (closeDetailsBtn) {
+    closeDetailsBtn.addEventListener('click', closeTableDetailsModal);
+  }
+
+  const tableDetailsModal = document.getElementById('tableDetailsModal');
+  if (tableDetailsModal) {
+    tableDetailsModal.addEventListener('click', (event) => {
+      if (event.target === tableDetailsModal) {
+        closeTableDetailsModal();
       }
     });
   }

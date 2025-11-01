@@ -125,6 +125,10 @@ export class ApiClient {
     return this.request(endpoint);
   }
 
+  async getTableBookings(tableId) {
+    return this.request(`/bookings/table/${tableId}`);
+  }
+
   // Helper methods
   isAuthenticated() {
     return AuthService.isLoggedIn();

@@ -195,4 +195,33 @@ public class BookingsController : ControllerBase
             return StatusCode(500, new { error = "An error occurred while retrieving bookings" });
         }
     }
+
+    /// <summary>
+    /// Get all bookings for a specific table (Admin only)
+    /// </summary>
+    /// <param name="tableId">Table ID to get bookings for</param>
+    /// <returns>List of all bookings for the specified table</returns>
+    /// <response code="200">Returns list of table bookings</response>
+    /// <response code="401">Unauthorized - JWT token required</response>
+    /// <response code="403">Forbidden - Admin role required</response>
+    /// <response code="500">Internal server error</response>
+    [HttpGet("table/{tableId}")]
+    [Authorize(Roles = "admin")]
+    [ProducesResponseType(typeof(IEnumerable<BookingDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<IEnumerable<BookingDto>>> GetTableBookings(int tableId)
+    {
+        try
+        {
+            var bookings = await _bookingService.GetTableBookingsAsync(tableId);
+            return Ok(bookings);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving bookings for table {TableId}", tableId);
+            return StatusCode(500, new { error = "An error occurred while retrieving table bookings" });
+        }
+    }
 }

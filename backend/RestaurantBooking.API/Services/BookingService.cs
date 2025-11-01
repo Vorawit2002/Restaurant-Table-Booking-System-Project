@@ -102,6 +102,7 @@ public class BookingService : IBookingService
                 Reference = b.Reference,
                 UserId = b.UserId,
                 UserName = b.User.FullName,
+                UserPhone = b.User.PhoneNumber,
                 NumberOfGuests = b.NumberOfGuests,
                 TableId = b.TableId,
                 TableNumber = b.Table.TableNumber,
@@ -143,6 +144,35 @@ public class BookingService : IBookingService
                 Reference = b.Reference,
                 UserId = b.UserId,
                 UserName = b.User.FullName,
+                UserPhone = b.User.PhoneNumber,
+                NumberOfGuests = b.NumberOfGuests,
+                TableId = b.TableId,
+                TableNumber = b.Table.TableNumber,
+                BookingDate = b.BookingDate.ToString("yyyy-MM-dd"),
+                TimeSlot = b.TimeSlot,
+                Status = b.Status,
+                CreatedAt = b.CreatedAt
+            })
+            .ToListAsync();
+
+        return bookings;
+    }
+
+    public async Task<IEnumerable<BookingDto>> GetTableBookingsAsync(int tableId)
+    {
+        var bookings = await _context.Bookings
+            .Include(b => b.User)
+            .Include(b => b.Table)
+            .Where(b => b.TableId == tableId)
+            .OrderByDescending(b => b.BookingDate)
+            .ThenBy(b => b.TimeSlot)
+            .Select(b => new BookingDto
+            {
+                Id = b.Id,
+                Reference = b.Reference,
+                UserId = b.UserId,
+                UserName = b.User.FullName,
+                UserPhone = b.User.PhoneNumber,
                 NumberOfGuests = b.NumberOfGuests,
                 TableId = b.TableId,
                 TableNumber = b.Table.TableNumber,

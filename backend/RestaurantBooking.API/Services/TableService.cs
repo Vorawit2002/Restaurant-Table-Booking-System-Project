@@ -23,7 +23,8 @@ public class TableService : ITableService
                 Id = t.Id,
                 TableNumber = t.TableNumber,
                 Capacity = t.Capacity,
-                ImageUrl = t.ImageUrl
+                ImageUrl = t.ImageUrl,
+                IsActive = t.IsActive
             })
             .ToListAsync();
 
@@ -40,16 +41,17 @@ public class TableService : ITableService
             .Select(b => b.TableId)
             .ToListAsync();
 
-        // Get all tables that are not in the booked list
+        // Get all tables that are not in the booked list and are active
         var availableTables = await _context.Tables
-            .Where(t => !bookedTableIds.Contains(t.Id))
+            .Where(t => !bookedTableIds.Contains(t.Id) && t.IsActive)
             .OrderBy(t => t.TableNumber)
             .Select(t => new TableDto
             {
                 Id = t.Id,
                 TableNumber = t.TableNumber,
                 Capacity = t.Capacity,
-                ImageUrl = t.ImageUrl
+                ImageUrl = t.ImageUrl,
+                IsActive = t.IsActive
             })
             .ToListAsync();
 
@@ -64,7 +66,9 @@ public class TableService : ITableService
             {
                 Id = t.Id,
                 TableNumber = t.TableNumber,
-                Capacity = t.Capacity
+                Capacity = t.Capacity,
+                ImageUrl = t.ImageUrl,
+                IsActive = t.IsActive
             })
             .FirstOrDefaultAsync();
 
@@ -98,7 +102,8 @@ public class TableService : ITableService
             Id = table.Id,
             TableNumber = table.TableNumber,
             Capacity = table.Capacity,
-            ImageUrl = table.ImageUrl
+            ImageUrl = table.ImageUrl,
+            IsActive = table.IsActive
         };
     }
 
@@ -110,21 +115,40 @@ public class TableService : ITableService
             return false;
         }
 
-        // Check if the new table number conflicts with another table
-        if (table.TableNumber != updateTableDto.TableNumber)
+        // Update table number if provided
+        if (!string.IsNullOrWhiteSpace(updateTableDto.TableNumber))
         {
-            var existingTable = await _context.Tables
-                .FirstOrDefaultAsync(t => t.TableNumber == updateTableDto.TableNumber && t.Id != id);
-
-            if (existingTable != null)
+            // Check if the new table number conflicts with another table
+            if (table.TableNumber != updateTableDto.TableNumber)
             {
-                throw new InvalidOperationException($"Table number '{updateTableDto.TableNumber}' already exists");
+                var existingTable = await _context.Tables
+                    .FirstOrDefaultAsync(t => t.TableNumber == updateTableDto.TableNumber && t.Id != id);
+
+                if (existingTable != null)
+                {
+                    throw new InvalidOperationException($"Table number '{updateTableDto.TableNumber}' already exists");
+                }
             }
+            table.TableNumber = updateTableDto.TableNumber;
         }
 
-        table.TableNumber = updateTableDto.TableNumber;
-        table.Capacity = updateTableDto.Capacity;
-        table.ImageUrl = updateTableDto.ImageUrl;
+        // Update capacity if provided
+        if (updateTableDto.Capacity.HasValue)
+        {
+            table.Capacity = updateTableDto.Capacity.Value;
+        }
+
+        // Update image URL if provided
+        if (updateTableDto.ImageUrl != null)
+        {
+            table.ImageUrl = updateTableDto.ImageUrl;
+        }
+        
+        // Update active status if provided
+        if (updateTableDto.IsActive.HasValue)
+        {
+            table.IsActive = updateTableDto.IsActive.Value;
+        }
 
         await _context.SaveChangesAsync();
         return true;

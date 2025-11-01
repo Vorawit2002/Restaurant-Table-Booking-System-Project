@@ -47,6 +47,7 @@
                         <tr>
                             <th>หมายเลขโต๊ะ</th>
                             <th>จำนวนที่นั่ง</th>
+                            <th>สถานะ</th>
                             <th>การจัดการ</th>
                         </tr>
                     </thead>
@@ -113,6 +114,31 @@
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">ยกเลิก</button>
                 <button type="button" class="btn btn-delete" id="confirmDeleteBtn">ลบโต๊ะ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="confirmation-icon">✅</div>
+            <h3 id="successTitle">สำเร็จ!</h3>
+            <p id="successMessage">ดำเนินการเรียบร้อยแล้ว</p>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-primary" id="closeSuccessBtn">ตกลง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Details Modal -->
+    <div id="tableDetailsModal" class="modal">
+        <div class="modal-content" style="max-width: 900px; width: 90%;">
+            <h3 style="margin-bottom: 20px; color: #2c3e50;">รายละเอียดการจองโต๊ะ <span id="detailTableNumber" style="color: #667eea;"></span></h3>
+            <div id="tableBookingsContainer" style="max-height: 500px; overflow-y: auto; margin: 20px 0;">
+                <!-- Bookings will be loaded here -->
+            </div>
+            <div class="modal-actions" style="justify-content: center; margin-top: 20px;">
+                <button type="button" class="btn btn-primary" id="closeDetailsBtn" style="min-width: 120px;">ปิด</button>
             </div>
         </div>
     </div>

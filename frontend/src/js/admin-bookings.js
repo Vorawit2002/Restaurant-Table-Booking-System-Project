@@ -81,12 +81,26 @@ function formatDateTime(dateString) {
   });
 }
 
+// Store all bookings for filtering
+let allBookings = [];
+
 // Load bookings with filters
-async function loadBookings(date, status) {
+async function loadBookings(date, status, name) {
   try {
     setLoading(true);
     const bookings = await apiClient.getAllBookings(date, status);
-    displayBookings(bookings);
+    allBookings = bookings;
+    
+    // Filter by name if provided
+    let filteredBookings = bookings;
+    if (name && name.trim()) {
+      const searchTerm = name.trim().toLowerCase();
+      filteredBookings = bookings.filter(booking => 
+        booking.userName.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    displayBookings(filteredBookings);
   } catch (error) {
     showMessage(`เกิดข้อผิดพลาด: ${error instanceof Error ? error.message : 'ไม่สามารถโหลดข้อมูลการจองได้'}`, 'error');
   } finally {
@@ -139,7 +153,7 @@ function displayBookings(bookings) {
           <span>${formatDate(booking.bookingDate)}</span>
         </div>
         <div class="booking-field">
-          <label>ช่วงเวลา</label>
+          <label>เวลา</label>
           <span>${booking.timeSlot}</span>
         </div>
         <div class="booking-field">
@@ -154,15 +168,88 @@ function displayBookings(bookings) {
           <label>สถานะ</label>
           <span class="booking-status ${statusClass}">${statusText}</span>
         </div>
-        <div class="booking-field">
-          <label>วันที่สร้าง</label>
-          <span>${formatDateTime(booking.createdAt)}</span>
-        </div>
+      </div>
+      <div class="booking-actions">
+        <button type="button" class="btn btn-primary btn-detail" data-booking-id="${booking.id}">
+          ดูรายละเอียด
+        </button>
       </div>
     `;
 
     bookingsList.appendChild(bookingItem);
   });
+
+  // Add event listeners to detail buttons
+  const detailButtons = document.querySelectorAll('.btn-detail');
+  detailButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      const bookingId = parseInt(e.target.getAttribute('data-booking-id'));
+      const booking = sortedBookings.find(b => b.id === bookingId);
+      if (booking) {
+        showBookingDetail(booking);
+      }
+    });
+  });
+}
+
+// Show booking detail modal
+function showBookingDetail(booking) {
+  const modal = document.getElementById('detailModal');
+  const content = document.getElementById('bookingDetailContent');
+  
+  if (!modal || !content) return;
+
+  const statusClass = booking.status === 'confirmed' ? 'status-confirmed' : 'status-cancelled';
+  const statusText = booking.status === 'confirmed' ? 'ยืนยันแล้ว' : 'ยกเลิกแล้ว';
+
+  content.innerHTML = `
+    <div class="detail-item">
+      <span class="detail-label">เลขที่การจอง:</span>
+      <span class="detail-value reference">${booking.reference}</span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">ชื่อลูกค้า:</span>
+      <span class="detail-value">${booking.userName}</span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">เบอร์โทร:</span>
+      <span class="detail-value">${booking.userPhone || '-'}</span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">วันที่จอง:</span>
+      <span class="detail-value">${formatDate(booking.bookingDate)}</span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">เวลา:</span>
+      <span class="detail-value">${booking.timeSlot}</span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">โต๊ะ:</span>
+      <span class="detail-value">${booking.tableNumber}</span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">จำนวนคน:</span>
+      <span class="detail-value">${booking.numberOfGuests} คน</span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">สถานะ:</span>
+      <span class="booking-status ${statusClass}">${statusText}</span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">วันที่สร้างการจอง:</span>
+      <span class="detail-value">${formatDateTime(booking.createdAt)}</span>
+    </div>
+  `;
+
+  modal.style.display = 'flex';
+}
+
+// Close modal
+function closeModal() {
+  const modal = document.getElementById('detailModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
 }
 
 // Handle filter form submission
@@ -172,10 +259,11 @@ async function handleFilterSubmit(event) {
   const form = event.target;
   const formData = new FormData(form);
 
+  const name = formData.get('filterName') || undefined;
   const date = formData.get('filterDate') || undefined;
   const status = formData.get('filterStatus') || undefined;
 
-  await loadBookings(date, status);
+  await loadBookings(date, status, name);
 }
 
 // Handle reset filters
@@ -207,6 +295,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const resetBtn = document.getElementById('resetBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', handleResetFilters);
+  }
+
+  const closeDetailBtn = document.getElementById('closeDetailBtn');
+  if (closeDetailBtn) {
+    closeDetailBtn.addEventListener('click', closeModal);
+  }
+
+  // Close modal when clicking outside
+  const modal = document.getElementById('detailModal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
   }
 
   const logoutBtn = document.getElementById('logoutBtn');

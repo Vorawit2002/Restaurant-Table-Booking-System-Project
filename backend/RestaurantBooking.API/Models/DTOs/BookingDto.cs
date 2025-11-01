@@ -8,6 +8,7 @@ public class BookingDto
     public string Reference { get; set; } = string.Empty;
     public int UserId { get; set; }
     public string UserName { get; set; } = string.Empty;
+    public string UserPhone { get; set; } = string.Empty;
     public int NumberOfGuests { get; set; }
     public int TableId { get; set; }
     public string TableNumber { get; set; } = string.Empty;
