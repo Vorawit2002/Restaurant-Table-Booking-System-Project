@@ -23,6 +23,10 @@ public class Table
     [Column("image_url")]
     public string? ImageUrl { get; set; }
 
+    [MaxLength(200)]
+    [Column("description")]
+    public string? Description { get; set; }
+
     [Column("is_active")]
     public bool IsActive { get; set; } = true;
 

@@ -71,38 +71,40 @@
             </form>
         </div>
 
-        <!-- Booking Confirmation -->
-        <div class="confirmation-card" id="confirmationCard" style="display: none;">
-            <div class="confirmation-icon">✅</div>
-            <h2>จองสำเร็จ!</h2>
-            <p class="confirmation-message">การจองของคุณได้รับการยืนยันแล้ว</p>
-            
-            <div class="confirmation-details">
-                <div class="detail-item">
-                    <span class="detail-label">เลขที่การจอง:</span>
-                    <span class="detail-value reference" id="bookingReference">-</span>
+        <!-- Booking Confirmation Modal -->
+        <div id="confirmationModal" class="modal">
+            <div class="modal-content">
+                <div class="confirmation-icon">✅</div>
+                <h3>จองสำเร็จ!</h3>
+                <p>การจองของคุณได้รับการยืนยันแล้ว</p>
+                
+                <div class="confirmation-details">
+                    <div class="detail-item">
+                        <span class="detail-label">เลขที่การจอง:</span>
+                        <span class="detail-value reference" id="bookingReference">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">โต๊ะ:</span>
+                        <span class="detail-value" id="confirmTable">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">วันที่:</span>
+                        <span class="detail-value" id="confirmDate">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">เวลา:</span>
+                        <span class="detail-value" id="confirmTime">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">จำนวนคน:</span>
+                        <span class="detail-value" id="confirmGuests">-</span>
+                    </div>
                 </div>
-                <div class="detail-item">
-                    <span class="detail-label">โต๊ะ:</span>
-                    <span class="detail-value" id="confirmTable">-</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">วันที่:</span>
-                    <span class="detail-value" id="confirmDate">-</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">เวลา:</span>
-                    <span class="detail-value" id="confirmTime">-</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">จำนวนคน:</span>
-                    <span class="detail-value" id="confirmGuests">-</span>
-                </div>
-            </div>
 
-            <div class="confirmation-actions">
-                <button class="btn btn-primary" id="viewBookingsBtn">ดูการจองของฉัน</button>
-                <button class="btn btn-secondary" id="backHomeBtn">กลับหน้าหลัก</button>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-primary" id="viewBookingsBtn">ดูการจองของฉัน</button>
+                    <button type="button" class="btn btn-secondary" id="backHomeBtn">กลับหน้าหลัก</button>
+                </div>
             </div>
         </div>
 

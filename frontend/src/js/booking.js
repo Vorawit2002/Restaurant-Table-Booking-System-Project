@@ -9,6 +9,11 @@ const apiClient = new ApiClient();
 let bookingDetails = null;
 let selectedTable = null;
 
+// Check authentication immediately
+if (!AuthService.isLoggedIn()) {
+  window.location.href = 'login.html';
+}
+
 // Check authentication on page load
 function checkAuthentication() {
   if (!AuthService.isLoggedIn()) {
@@ -41,8 +46,9 @@ function loadBookingDetails() {
   try {
     bookingDetails = JSON.parse(storedDetails);
     if (bookingDetails) {
-      loadTableInfo();
       setMinDate();
+      setBookingDate();
+      loadTableInfo();
     }
   } catch (error) {
     showMessage('เกิดข้อผิดพลาดในการโหลดข้อมูล', 'error');
@@ -52,13 +58,26 @@ function loadBookingDetails() {
   }
 }
 
+// Set booking date from stored details
+function setBookingDate() {
+  const dateInput = document.getElementById('bookingDate');
+  if (dateInput && bookingDetails && bookingDetails.bookingDate) {
+    dateInput.value = bookingDetails.bookingDate;
+  }
+}
+
 // Set minimum date to today
 function setMinDate() {
   const dateInput = document.getElementById('bookingDate');
   if (dateInput) {
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.min = today;
-    dateInput.value = today;
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayString = `${year}-${month}-${day}`;
+    
+    dateInput.min = todayString;
+    dateInput.value = todayString;
   }
 }
 
@@ -254,17 +273,9 @@ function setLoading(isLoading) {
   }
 }
 
-// Display confirmation
+// Display confirmation modal
 function displayConfirmation(reference, bookingDate, timeSlot, numberOfGuests) {
-  const bookingFormCard = document.getElementById('bookingFormCard');
-  const confirmationCard = document.getElementById('confirmationCard');
-
-  if (bookingFormCard) {
-    bookingFormCard.style.display = 'none';
-  }
-  if (confirmationCard) {
-    confirmationCard.style.display = 'block';
-  }
+  const confirmationModal = document.getElementById('confirmationModal');
 
   // Fill confirmation details
   const bookingReference = document.getElementById('bookingReference');
@@ -287,6 +298,11 @@ function displayConfirmation(reference, bookingDate, timeSlot, numberOfGuests) {
   }
   if (confirmGuests) {
     confirmGuests.textContent = `${numberOfGuests} คน`;
+  }
+
+  // Show modal
+  if (confirmationModal) {
+    confirmationModal.style.display = 'flex';
   }
 
   // Clear sessionStorage

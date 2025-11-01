@@ -6,6 +6,14 @@ import { AuthService } from './auth-service.js';
 
 const apiClient = new ApiClient();
 
+// Check authentication immediately
+if (!AuthService.isLoggedIn()) {
+  window.location.href = 'login.html';
+} else if (!AuthService.isAdmin()) {
+  alert('คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+  window.location.href = 'index.html';
+}
+
 // Check authentication and admin role
 function checkAdminAccess() {
   if (!AuthService.isLoggedIn()) {

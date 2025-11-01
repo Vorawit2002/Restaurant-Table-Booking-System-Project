@@ -8,6 +8,11 @@ const apiClient = new ApiClient();
 let allBookings = [];
 let bookingToCancel = null;
 
+// Check authentication immediately
+if (!AuthService.isLoggedIn()) {
+  window.location.href = 'login.html';
+}
+
 // Check authentication on page load
 function checkAuthentication() {
   if (!AuthService.isLoggedIn()) {
@@ -121,7 +126,7 @@ function displayBookings(bookings) {
 
     const statusClass = booking.status === 'confirmed' ? 'status-confirmed' : 'status-cancelled';
     const statusText = booking.status === 'confirmed' ? 'ยืนยันแล้ว' : 'ยกเลิกแล้ว';
-    const canCancel = isUpcoming(booking);
+    const canCancel = booking.status === 'confirmed';
 
     bookingItem.innerHTML = `
       <div class="booking-info">
@@ -151,7 +156,7 @@ function displayBookings(bookings) {
         </div>
       </div>
       <div class="booking-actions">
-        ${canCancel ? `<button class="btn btn-cancel" data-booking-id="${booking.id}">ยกเลิกการจอง</button>` : ''}
+        ${canCancel ? `<button type="button" class="btn btn-cancel" data-booking-id="${booking.id}">ยกเลิกการจอง</button>` : ''}
       </div>
     `;
 

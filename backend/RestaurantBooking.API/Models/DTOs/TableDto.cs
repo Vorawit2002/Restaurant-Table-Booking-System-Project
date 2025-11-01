@@ -8,6 +8,7 @@ public class TableDto
     public string TableNumber { get; set; } = string.Empty;
     public int Capacity { get; set; }
     public string? ImageUrl { get; set; }
+    public string? Description { get; set; }
     public bool IsActive { get; set; }
 }
 
@@ -23,6 +24,9 @@ public class CreateTableDto
 
     [MaxLength(500, ErrorMessage = "Image URL cannot exceed 500 characters")]
     public string? ImageUrl { get; set; }
+
+    [MaxLength(200, ErrorMessage = "Description cannot exceed 200 characters")]
+    public string? Description { get; set; }
 }
 
 public class UpdateTableDto
@@ -35,6 +39,9 @@ public class UpdateTableDto
 
     [MaxLength(500, ErrorMessage = "Image URL cannot exceed 500 characters")]
     public string? ImageUrl { get; set; }
+
+    [MaxLength(200, ErrorMessage = "Description cannot exceed 200 characters")]
+    public string? Description { get; set; }
 
     public bool? IsActive { get; set; }
 }

@@ -254,6 +254,13 @@ p {
     color: #9ca3af;
 }
 
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+    line-height: 1.5;
+}
+
 .form-group input:disabled,
 .form-group select:disabled,
 .form-group textarea:disabled {
@@ -1237,6 +1244,47 @@ p {
     justify-content: center;
 }
 
+.confirmation-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.confirmation-details {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.detail-value {
+    color: #1f2937;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.detail-value.reference {
+    color: #667eea;
+    font-size: 16px;
+    font-weight: 700;
+}
+
 /* ========================================
    Responsive Design
    ======================================== */
@@ -1655,29 +1703,42 @@ p {
 }
 
 .tables-table th:nth-child(1) {
-    width: 15%;
+    width: 12%;
 }
 
 .tables-table th:nth-child(2) {
-    width: 15%;
+    width: 12%;
 }
 
 .tables-table th:nth-child(3) {
+    width: 25%;
+}
+
+.tables-table th:nth-child(4) {
     width: 10%;
     text-align: center;
 }
 
-.tables-table th:nth-child(4) {
-    width: 60%;
-    text-align: center;
-}
-
-.tables-table td:nth-child(3) {
+.tables-table th:nth-child(5) {
+    width: 41%;
     text-align: center;
 }
 
 .tables-table td:nth-child(4) {
+    text-align: center;
+}
+
+.tables-table td:nth-child(5) {
     text-align: right;
+}
+
+.table-description {
+    color: #6b7280;
+    font-size: 13px;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .tables-table th:first-child {
@@ -1756,7 +1817,7 @@ p {
 .table-actions {
     display: flex;
     gap: 8px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: flex-end;
 }

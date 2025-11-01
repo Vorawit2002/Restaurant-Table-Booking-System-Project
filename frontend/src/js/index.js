@@ -6,6 +6,11 @@ import { AuthService } from './auth-service.js';
 
 const apiClient = new ApiClient();
 
+// Check authentication immediately
+if (!AuthService.isLoggedIn()) {
+  window.location.href = 'login.html';
+}
+
 // Check authentication on page load
 function checkAuthentication() {
   if (!AuthService.isLoggedIn()) {
@@ -27,9 +32,14 @@ function checkAuthentication() {
 function setMinDate() {
   const dateInput = document.getElementById('bookingDate');
   if (dateInput) {
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.min = today;
-    dateInput.value = today;
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayString = `${year}-${month}-${day}`;
+    
+    dateInput.min = todayString;
+    dateInput.value = todayString;
   }
 }
 
@@ -113,13 +123,9 @@ function displayTables(tables, numberOfGuests, bookingDate) {
     const tableCard = document.createElement('div');
     tableCard.className = 'table-card';
     
-    // Mark the best match (smallest suitable table)
-    const isBestMatch = index === 0;
-    const badge = isBestMatch ? '<span style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-left: 8px;">แนะนำ</span>' : '';
-    
     tableCard.innerHTML = `
       <div class="table-icon">🪑</div>
-      <h3>โต๊ะ ${table.tableNumber} ${badge}</h3>
+      <h3>โต๊ะ ${table.tableNumber}</h3>
       <p class="table-capacity">รองรับ ${table.capacity} ที่นั่ง</p>
       <button class="btn btn-primary btn-book" 
               data-table-id="${table.id}" 
@@ -179,11 +185,12 @@ async function handleSearch(event) {
   try {
     setLoading(true);
     
-    // Get all tables
+    // Get all active tables
     const allTables = await apiClient.getTables();
+    const activeTables = allTables.filter(table => table.isActive);
     
     // Find suitable tables based on number of guests
-    const suitableTables = findSuitableTables(allTables, numberOfGuests);
+    const suitableTables = findSuitableTables(activeTables, numberOfGuests);
     
     if (suitableTables.length === 0) {
       showMessage(`ไม่พบโต๊ะที่รองรับ ${numberOfGuests} คน`, 'error');

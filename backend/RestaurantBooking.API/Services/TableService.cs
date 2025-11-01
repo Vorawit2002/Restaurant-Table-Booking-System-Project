@@ -24,6 +24,7 @@ public class TableService : ITableService
                 TableNumber = t.TableNumber,
                 Capacity = t.Capacity,
                 ImageUrl = t.ImageUrl,
+                Description = t.Description,
                 IsActive = t.IsActive
             })
             .ToListAsync();
@@ -51,6 +52,7 @@ public class TableService : ITableService
                 TableNumber = t.TableNumber,
                 Capacity = t.Capacity,
                 ImageUrl = t.ImageUrl,
+                Description = t.Description,
                 IsActive = t.IsActive
             })
             .ToListAsync();
@@ -68,6 +70,7 @@ public class TableService : ITableService
                 TableNumber = t.TableNumber,
                 Capacity = t.Capacity,
                 ImageUrl = t.ImageUrl,
+                Description = t.Description,
                 IsActive = t.IsActive
             })
             .FirstOrDefaultAsync();
@@ -91,6 +94,7 @@ public class TableService : ITableService
             TableNumber = createTableDto.TableNumber,
             Capacity = createTableDto.Capacity,
             ImageUrl = createTableDto.ImageUrl,
+            Description = createTableDto.Description,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -103,6 +107,7 @@ public class TableService : ITableService
             TableNumber = table.TableNumber,
             Capacity = table.Capacity,
             ImageUrl = table.ImageUrl,
+            Description = table.Description,
             IsActive = table.IsActive
         };
     }
@@ -142,6 +147,12 @@ public class TableService : ITableService
         if (updateTableDto.ImageUrl != null)
         {
             table.ImageUrl = updateTableDto.ImageUrl;
+        }
+
+        // Update description if provided
+        if (updateTableDto.Description != null)
+        {
+            table.Description = updateTableDto.Description;
         }
         
         // Update active status if provided

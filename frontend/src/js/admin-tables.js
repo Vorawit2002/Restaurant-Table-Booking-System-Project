@@ -120,9 +120,11 @@ function displayTables(tables) {
   sortedTables.forEach(table => {
     const row = document.createElement('tr');
     const activeClass = table.isActive ? 'checked' : '';
+    const descriptionText = table.description || '-';
     row.innerHTML = `
       <td>${table.tableNumber}</td>
       <td>${table.capacity} ที่นั่ง</td>
+      <td class="table-description">${descriptionText}</td>
       <td>
         <label class="switch">
           <input type="checkbox" class="toggle-active" data-table-id="${table.id}" ${activeClass}>
@@ -192,12 +194,14 @@ async function handleEditTable(event) {
     const tableIdInput = document.getElementById('tableId');
     const tableNumberInput = document.getElementById('tableNumber');
     const capacityInput = document.getElementById('capacity');
+    const descriptionInput = document.getElementById('description');
     const formTitle = document.getElementById('formTitle');
     const submitBtn = document.getElementById('submitBtn');
 
     if (tableIdInput) tableIdInput.value = tableId.toString();
     if (tableNumberInput) tableNumberInput.value = table.tableNumber;
     if (capacityInput) capacityInput.value = table.capacity.toString();
+    if (descriptionInput) descriptionInput.value = table.description || '';
     if (formTitle) formTitle.textContent = 'แก้ไขโต๊ะ';
     if (submitBtn) submitBtn.textContent = 'บันทึกการแก้ไข';
 
@@ -380,6 +384,7 @@ async function handleFormSubmit(event) {
 
   const tableNumber = formData.get('tableNumber');
   const capacity = parseInt(formData.get('capacity'));
+  const description = formData.get('description') || '';
 
   if (!tableNumber || !capacity) {
     showMessage('กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
@@ -389,11 +394,11 @@ async function handleFormSubmit(event) {
   try {
     if (editingTableId) {
       // Update existing table
-      await apiClient.updateTable(editingTableId, { tableNumber, capacity });
+      await apiClient.updateTable(editingTableId, { tableNumber, capacity, description });
       showSuccessDialog('แก้ไขโต๊ะสำเร็จ', `โต๊ะ ${tableNumber} ถูกแก้ไขเรียบร้อยแล้ว`);
     } else {
       // Create new table
-      await apiClient.createTable({ tableNumber, capacity });
+      await apiClient.createTable({ tableNumber, capacity, description });
       showSuccessDialog('เพิ่มโต๊ะสำเร็จ', `โต๊ะ ${tableNumber} (${capacity} ที่นั่ง) ถูกเพิ่มเข้าระบบแล้ว`);
     }
 
