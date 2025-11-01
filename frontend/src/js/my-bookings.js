@@ -10,13 +10,13 @@ let bookingToCancel = null;
 
 // Check authentication immediately
 if (!AuthService.isLoggedIn()) {
-  window.location.href = 'login.html';
+  window.location.href = 'login';
 }
 
 // Check authentication on page load
 function checkAuthentication() {
   if (!AuthService.isLoggedIn()) {
-    window.location.href = 'login.html';
+    window.location.href = 'login';
     return;
   }
 
@@ -257,7 +257,7 @@ async function confirmCancellation() {
 // Handle logout
 function handleLogout() {
   apiClient.logout();
-  window.location.href = 'login.html';
+  window.location.href = 'login';
 }
 
 // Initialize page

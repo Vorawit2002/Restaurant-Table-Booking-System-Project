@@ -10,9 +10,9 @@ const apiClient = new ApiClient();
 if (AuthService.isLoggedIn()) {
   const user = AuthService.getUserFromToken();
   if (user && user.role === 'admin') {
-    window.location.href = 'admin.html';
+    window.location.href = 'admin';
   } else {
-    window.location.href = 'index.html';
+    window.location.href = 'index';
   }
 }
 
@@ -51,9 +51,9 @@ loginForm.addEventListener('submit', async (e) => {
     // Login successful - check user role and redirect accordingly
     const user = AuthService.getUserFromToken();
     if (user && user.role === 'admin') {
-      window.location.href = 'admin.html';
+      window.location.href = 'admin';
     } else {
-      window.location.href = 'index.html';
+      window.location.href = 'index';
     }
   } catch (error) {
     // Show error message

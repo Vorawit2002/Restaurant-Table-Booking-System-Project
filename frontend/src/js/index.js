@@ -8,13 +8,13 @@ const apiClient = new ApiClient();
 
 // Check authentication immediately
 if (!AuthService.isLoggedIn()) {
-  window.location.href = 'login.html';
+  window.location.href = 'login';
 }
 
 // Check authentication on page load
 function checkAuthentication() {
   if (!AuthService.isLoggedIn()) {
-    window.location.href = 'login.html';
+    window.location.href = 'login';
     return;
   }
 
@@ -164,7 +164,7 @@ function handleSelectTable(event) {
   };
 
   sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
-  window.location.href = 'booking.html';
+  window.location.href = 'booking';
 }
 
 // Handle search form submission
@@ -209,7 +209,7 @@ async function handleSearch(event) {
 // Handle logout
 function handleLogout() {
   apiClient.logout();
-  window.location.href = 'login.html';
+  window.location.href = 'login';
 }
 
 // Initialize page

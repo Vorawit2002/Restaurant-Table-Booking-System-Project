@@ -8,22 +8,22 @@ const apiClient = new ApiClient();
 
 // Check authentication immediately
 if (!AuthService.isLoggedIn()) {
-  window.location.href = 'login.html';
+  window.location.href = 'login';
 } else if (!AuthService.isAdmin()) {
   alert('คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
-  window.location.href = 'index.html';
+  window.location.href = 'index';
 }
 
 // Check authentication and admin role
 function checkAdminAccess() {
   if (!AuthService.isLoggedIn()) {
-    window.location.href = 'login.html';
+    window.location.href = 'login';
     return;
   }
 
   if (!AuthService.isAdmin()) {
     alert('คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
-    window.location.href = 'index.html';
+    window.location.href = 'index';
     return;
   }
 
@@ -189,7 +189,7 @@ function displayTodayBookings(bookings) {
 // Handle logout
 function handleLogout() {
   apiClient.logout();
-  window.location.href = 'login.html';
+  window.location.href = 'login';
 }
 
 // Initialize page

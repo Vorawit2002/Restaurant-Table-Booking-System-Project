@@ -44,4 +44,19 @@ export default defineConfig({
       },
     },
   },
+  appType: 'mpa',
+  plugins: [
+    {
+      name: 'html-rewrite',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          // Remove .html extension from URLs
+          if (req.url && !req.url.includes('.') && !req.url.startsWith('/api') && !req.url.startsWith('/src')) {
+            req.url = req.url === '/' ? '/index.html' : `${req.url}.html`;
+          }
+          next();
+        });
+      },
+    },
+  ],
 });

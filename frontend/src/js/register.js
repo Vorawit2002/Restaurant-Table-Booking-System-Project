@@ -10,9 +10,9 @@ const apiClient = new ApiClient();
 if (AuthService.isLoggedIn()) {
   const user = AuthService.getUserFromToken();
   if (user && user.role === 'admin') {
-    window.location.href = 'admin.html';
+    window.location.href = 'admin';
   } else {
-    window.location.href = 'index.html';
+    window.location.href = 'index';
   }
 }
 
@@ -71,7 +71,7 @@ registerForm.addEventListener('submit', async (e) => {
     
     // Redirect to login page after 2 seconds
     setTimeout(() => {
-      window.location.href = 'login.html';
+      window.location.href = 'login';
     }, 2000);
     
   } catch (error) {

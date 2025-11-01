@@ -11,13 +11,13 @@ let selectedTable = null;
 
 // Check authentication immediately
 if (!AuthService.isLoggedIn()) {
-  window.location.href = 'login.html';
+  window.location.href = 'login';
 }
 
 // Check authentication on page load
 function checkAuthentication() {
   if (!AuthService.isLoggedIn()) {
-    window.location.href = 'login.html';
+    window.location.href = 'login';
     return;
   }
 
@@ -38,7 +38,7 @@ function loadBookingDetails() {
   if (!storedDetails) {
     showMessage('ไม่พบข้อมูลการจอง กรุณาเลือกโต๊ะใหม่', 'error');
     setTimeout(() => {
-      window.location.href = 'index.html';
+      window.location.href = 'index';
     }, 2000);
     return;
   }
@@ -53,7 +53,7 @@ function loadBookingDetails() {
   } catch (error) {
     showMessage('เกิดข้อผิดพลาดในการโหลดข้อมูล', 'error');
     setTimeout(() => {
-      window.location.href = 'index.html';
+      window.location.href = 'index';
     }, 2000);
   }
 }
@@ -164,7 +164,7 @@ async function loadTableInfo() {
     if (!selectedTable) {
       showMessage('ไม่พบข้อมูลโต๊ะ', 'error');
       setTimeout(() => {
-        window.location.href = 'index.html';
+        window.location.href = 'index';
       }, 2000);
     } else {
       displayTableInfo();
@@ -364,23 +364,23 @@ async function handleBooking(event) {
 // Handle cancel button
 function handleCancel() {
   sessionStorage.removeItem('bookingDetails');
-  window.location.href = 'index.html';
+  window.location.href = 'index';
 }
 
 // Handle logout
 function handleLogout() {
   apiClient.logout();
-  window.location.href = 'login.html';
+  window.location.href = 'login';
 }
 
 // Navigate to my bookings
 function navigateToMyBookings() {
-  window.location.href = 'my-bookings.html';
+  window.location.href = 'my-bookings';
 }
 
 // Navigate to home
 function navigateToHome() {
-  window.location.href = 'index.html';
+  window.location.href = 'index';
 }
 
 // Initialize page

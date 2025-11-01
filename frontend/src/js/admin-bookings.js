@@ -9,13 +9,13 @@ const apiClient = new ApiClient();
 // Check authentication and admin role
 function checkAdminAccess() {
   if (!AuthService.isLoggedIn()) {
-    window.location.href = 'login.html';
+    window.location.href = 'login';
     return;
   }
 
   if (!AuthService.isAdmin()) {
     alert('คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
-    window.location.href = 'index.html';
+    window.location.href = 'index';
     return;
   }
 
@@ -279,7 +279,7 @@ async function handleResetFilters() {
 // Handle logout
 function handleLogout() {
   apiClient.logout();
-  window.location.href = 'login.html';
+  window.location.href = 'login';
 }
 
 // Initialize page
