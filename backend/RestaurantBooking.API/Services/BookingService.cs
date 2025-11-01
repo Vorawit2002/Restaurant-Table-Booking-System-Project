@@ -8,26 +8,26 @@ namespace RestaurantBooking.API.Services;
 public class BookingService : IBookingService
 {
     private readonly ApplicationDbContext _context;
-    private static readonly string[] ValidTimeSlots = new[]
-    {
-        "11:00-13:00",
-        "13:00-15:00",
-        "17:00-19:00",
-        "19:00-21:00",
-        "21:00-23:00"
-    };
 
     public BookingService(ApplicationDbContext context)
     {
         _context = context;
     }
 
+
+
     public async Task<BookingResponseDto> CreateBookingAsync(int userId, BookingRequestDto bookingRequest)
     {
-        // Validate time slot
-        if (!ValidTimeSlots.Contains(bookingRequest.TimeSlot))
+        // Validate time format (HH:MM)
+        if (!TimeOnly.TryParse(bookingRequest.TimeSlot, out var bookingTime))
         {
-            throw new ArgumentException("Invalid time slot");
+            throw new ArgumentException("Invalid time format. Use HH:MM");
+        }
+
+        // Validate time range (10:00 - 21:00)
+        if (bookingTime.Hour < 10 || bookingTime.Hour > 21 || (bookingTime.Hour == 21 && bookingTime.Minute > 0))
+        {
+            throw new ArgumentException("Booking time must be between 10:00 and 21:00");
         }
 
         // Parse booking date
@@ -55,11 +55,11 @@ public class BookingService : IBookingService
             throw new ArgumentException($"Number of guests ({bookingRequest.NumberOfGuests}) exceeds table capacity ({table.Capacity})");
         }
 
-        // Check if table is available for the selected date and time slot
+        // Check if table is available for the selected date and time
         var isTableAvailable = await IsTableAvailableAsync(bookingRequest.TableId, bookingDate, bookingRequest.TimeSlot);
         if (!isTableAvailable)
         {
-            throw new InvalidOperationException("Table is not available for the selected date and time slot");
+            throw new InvalidOperationException("Table is not available for the selected date and time");
         }
 
         // Generate unique booking reference

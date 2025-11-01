@@ -71,34 +71,25 @@ public class TablesController : ControllerBase
                 return BadRequest(new { error = "Invalid date format. Use YYYY-MM-DD" });
             }
 
-            // Validate time slot parameter
+            // Validate time parameter
             if (string.IsNullOrWhiteSpace(timeSlot))
             {
-                return BadRequest(new { error = "Time slot parameter is required" });
+                return BadRequest(new { error = "Time parameter is required" });
             }
 
-            // Convert single time to time slot if needed
-            string normalizedTimeSlot = timeSlot;
-            if (!timeSlot.Contains('-'))
+            // Validate time format (HH:MM)
+            if (!TimeOnly.TryParse(timeSlot, out var bookingTime))
             {
-                // Single time format (HH:MM), convert to time slot
-                normalizedTimeSlot = ConvertTimeToSlot(timeSlot);
-                if (normalizedTimeSlot == null)
-                {
-                    return BadRequest(new { error = "Invalid time format. Use HH:MM (e.g., 18:30)" });
-                }
-            }
-            else
-            {
-                // Validate time slot format
-                var validTimeSlots = new[] { "11:00-13:00", "13:00-15:00", "17:00-19:00", "19:00-21:00", "21:00-23:00" };
-                if (!validTimeSlots.Contains(normalizedTimeSlot))
-                {
-                    return BadRequest(new { error = "Invalid time slot. Valid slots: " + string.Join(", ", validTimeSlots) });
-                }
+                return BadRequest(new { error = "Invalid time format. Use HH:MM (e.g., 18:30)" });
             }
 
-            var availableTables = await _tableService.GetAvailableTablesAsync(bookingDate, normalizedTimeSlot);
+            // Validate time range (10:00 - 21:00)
+            if (bookingTime.Hour < 10 || bookingTime.Hour > 21 || (bookingTime.Hour == 21 && bookingTime.Minute > 0))
+            {
+                return BadRequest(new { error = "Time must be between 10:00 and 21:00" });
+            }
+
+            var availableTables = await _tableService.GetAvailableTablesAsync(bookingDate, timeSlot);
             return Ok(availableTables);
         }
         catch (Exception ex)
@@ -108,43 +99,7 @@ public class TablesController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Convert a single time (HH:MM) to appropriate time slot
-    /// </summary>
-    private string? ConvertTimeToSlot(string time)
-    {
-        if (!TimeOnly.TryParse(time, out var timeOnly))
-        {
-            return null;
-        }
 
-        var hour = timeOnly.Hour;
-        var minute = timeOnly.Minute;
-        var totalMinutes = hour * 60 + minute;
-
-        // Map time to appropriate slot (10:00 - 21:00)
-        if (totalMinutes >= 10 * 60 && totalMinutes < 11 * 60)
-            return "11:00-13:00";
-        if (totalMinutes >= 11 * 60 && totalMinutes < 13 * 60)
-            return "11:00-13:00";
-        if (totalMinutes >= 13 * 60 && totalMinutes < 15 * 60)
-            return "13:00-15:00";
-        if (totalMinutes >= 15 * 60 && totalMinutes < 17 * 60)
-            return totalMinutes < 16 * 60 ? "13:00-15:00" : "17:00-19:00";
-        if (totalMinutes >= 17 * 60 && totalMinutes < 19 * 60)
-            return "17:00-19:00";
-        if (totalMinutes >= 19 * 60 && totalMinutes < 21 * 60)
-            return "19:00-21:00";
-        if (totalMinutes >= 21 * 60 && totalMinutes <= 21 * 60)
-            return "21:00-23:00";
-        
-        // Before 10:00, use first slot
-        if (totalMinutes < 10 * 60)
-            return "11:00-13:00";
-
-        // After 21:00, use last slot
-        return "21:00-23:00";
-    }
 
     /// <summary>
     /// Create a new table (Admin only)
