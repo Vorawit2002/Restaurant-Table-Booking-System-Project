@@ -62,6 +62,78 @@ function setMinDate() {
   }
 }
 
+// Generate time slots and check availability
+async function generateTimeSlots() {
+  const timeSlotsGrid = document.getElementById('timeSlotsGrid');
+  if (!timeSlotsGrid || !bookingDetails) return;
+
+  const times = [
+    '10:00', '10:30', '11:00', '11:30', '12:00', '12:30',
+    '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
+    '16:00', '16:30', '17:00', '17:30', '18:00', '18:30',
+    '19:00', '19:30', '20:00', '20:30', '21:00'
+  ];
+
+  timeSlotsGrid.innerHTML = '<p style="text-align: center; color: #6b7280;">กำลังตรวจสอบเวลาว่าง...</p>';
+
+  try {
+    // Check availability for each time slot
+    const availabilityPromises = times.map(async (time) => {
+      try {
+        const availableTables = await apiClient.getAvailableTables(bookingDetails.bookingDate, time);
+        const isAvailable = availableTables.some(table => table.id === bookingDetails.tableId);
+        return { time, isAvailable };
+      } catch (error) {
+        return { time, isAvailable: false };
+      }
+    });
+
+    const availabilityResults = await Promise.all(availabilityPromises);
+    
+    timeSlotsGrid.innerHTML = '';
+
+    availabilityResults.forEach(({ time, isAvailable }) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'time-slot-btn';
+      button.textContent = time;
+      button.dataset.time = time;
+      
+      if (!isAvailable) {
+        button.classList.add('disabled');
+        button.disabled = true;
+        button.title = 'เวลานี้ไม่ว่าง';
+      } else {
+        button.addEventListener('click', () => selectTimeSlot(time));
+      }
+      
+      timeSlotsGrid.appendChild(button);
+    });
+  } catch (error) {
+    timeSlotsGrid.innerHTML = '<p style="text-align: center; color: #e74c3c;">เกิดข้อผิดพลาดในการตรวจสอบเวลาว่าง</p>';
+    console.error('Error checking availability:', error);
+  }
+}
+
+// Select time slot
+function selectTimeSlot(time) {
+  // Remove selected class from all buttons
+  const allButtons = document.querySelectorAll('.time-slot-btn');
+  allButtons.forEach(btn => btn.classList.remove('selected'));
+  
+  // Add selected class to clicked button
+  const selectedButton = document.querySelector(`[data-time="${time}"]`);
+  if (selectedButton) {
+    selectedButton.classList.add('selected');
+  }
+  
+  // Set hidden input value
+  const bookingTimeInput = document.getElementById('bookingTime');
+  if (bookingTimeInput) {
+    bookingTimeInput.value = time;
+  }
+}
+
 // Load table information
 async function loadTableInfo() {
   if (!bookingDetails) return;
@@ -77,6 +149,7 @@ async function loadTableInfo() {
       }, 2000);
     } else {
       displayTableInfo();
+      await generateTimeSlots();
     }
   } catch (error) {
     showMessage('เกิดข้อผิดพลาดในการโหลดข้อมูลโต๊ะ', 'error');
@@ -233,10 +306,10 @@ async function handleBooking(event) {
   const formData = new FormData(form);
   
   const bookingDate = formData.get('bookingDate');
-  const timeSlot = formData.get('timeSlot');
+  const bookingTime = formData.get('bookingTime');
   const numberOfGuests = parseInt(formData.get('numberOfGuests'));
 
-  if (!bookingDate || !timeSlot || !numberOfGuests) {
+  if (!bookingDate || !bookingTime || !numberOfGuests) {
     showMessage('กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
     return;
   }
@@ -250,16 +323,19 @@ async function handleBooking(event) {
   const bookingRequest = {
     tableId: bookingDetails.tableId,
     bookingDate: bookingDate,
-    timeSlot: timeSlot,
+    timeSlot: bookingTime,
     numberOfGuests: numberOfGuests
   };
+
+  console.log('Booking Request:', bookingRequest);
 
   try {
     setLoading(true);
     const response = await apiClient.createBooking(bookingRequest);
-    displayConfirmation(response.reference, bookingDate, timeSlot, numberOfGuests);
+    displayConfirmation(response.reference, bookingDate, bookingTime, numberOfGuests);
     showMessage('จองสำเร็จ!', 'success');
   } catch (error) {
+    console.error('Booking Error:', error);
     showMessage(
       `เกิดข้อผิดพลาด: ${error instanceof Error ? error.message : 'ไม่สามารถจองได้'}`,
       'error'

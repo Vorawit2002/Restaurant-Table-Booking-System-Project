@@ -91,7 +91,7 @@ function findSuitableTables(allTables, numberOfGuests) {
 }
 
 // Display suitable tables
-function displayTables(tables, numberOfGuests, bookingDate, bookingTime) {
+function displayTables(tables, numberOfGuests, bookingDate) {
   const tablesList = document.getElementById('tablesList');
   const tablesContainer = document.getElementById('tablesContainer');
   const noResultsContainer = document.getElementById('noResultsContainer');
@@ -125,9 +125,8 @@ function displayTables(tables, numberOfGuests, bookingDate, bookingTime) {
               data-table-id="${table.id}" 
               data-table-capacity="${table.capacity}"
               data-booking-date="${bookingDate}"
-              data-booking-time="${bookingTime}"
               data-number-of-guests="${numberOfGuests}">
-        จองโต๊ะนี้
+        เลือกโต๊ะนี้
       </button>
     `;
     tablesList.appendChild(tableCard);
@@ -146,17 +145,15 @@ function handleSelectTable(event) {
   const tableId = button.getAttribute('data-table-id');
   const tableCapacity = button.getAttribute('data-table-capacity');
   const bookingDate = button.getAttribute('data-booking-date');
-  const bookingTime = button.getAttribute('data-booking-time');
   const numberOfGuests = button.getAttribute('data-number-of-guests');
 
   if (!tableId) return;
 
-  // Store table selection and redirect to booking page
+  // Store table selection and redirect to booking page (without time)
   const bookingDetails = {
     tableId: parseInt(tableId),
     tableCapacity: parseInt(tableCapacity),
     bookingDate: bookingDate,
-    bookingTime: bookingTime,
     numberOfGuests: parseInt(numberOfGuests)
   };
 
@@ -173,9 +170,8 @@ async function handleSearch(event) {
   
   const numberOfGuests = parseInt(formData.get('numberOfGuests'));
   const bookingDate = formData.get('bookingDate');
-  const bookingTime = formData.get('bookingTime');
 
-  if (!numberOfGuests || !bookingDate || !bookingTime) {
+  if (!numberOfGuests || !bookingDate) {
     showMessage('กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
     return;
   }
@@ -183,17 +179,17 @@ async function handleSearch(event) {
   try {
     setLoading(true);
     
-    // Send time directly to backend, it will convert to time slot
-    const availableTables = await apiClient.getAvailableTables(bookingDate, bookingTime);
+    // Get all tables
+    const allTables = await apiClient.getTables();
     
     // Find suitable tables based on number of guests
-    const suitableTables = findSuitableTables(availableTables, numberOfGuests);
+    const suitableTables = findSuitableTables(allTables, numberOfGuests);
     
     if (suitableTables.length === 0) {
-      showMessage(`ไม่พบโต๊ะว่างที่รองรับ ${numberOfGuests} คน สำหรับเวลา ${bookingTime}`, 'error');
+      showMessage(`ไม่พบโต๊ะที่รองรับ ${numberOfGuests} คน`, 'error');
     }
     
-    displayTables(suitableTables, numberOfGuests, bookingDate, bookingTime);
+    displayTables(suitableTables, numberOfGuests, bookingDate);
   } catch (error) {
     showMessage(`เกิดข้อผิดพลาด: ${error instanceof Error ? error.message : 'ไม่สามารถค้นหาโต๊ะได้'}`, 'error');
   } finally {
