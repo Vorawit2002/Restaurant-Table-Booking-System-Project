@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ - ระบบจองโต๊ะอาหาร</title>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1>เข้าสู่ระบบ</h1>
+            <p class="subtitle">ระบบจองโต๊ะอาหาร</p>
+            
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="email">อีเมล</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        required 
+                        placeholder="กรอกอีเมลของคุณ"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">รหัสผ่าน</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        required 
+                        placeholder="กรอกรหัสผ่าน"
+                        minlength="6"
+                    >
+                </div>
+
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+                <button type="submit" class="btn btn-primary">เข้าสู่ระบบ</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>ยังไม่มีบัญชี? <a href="register.html">ลงทะเบียนที่นี่</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/js/login.js"></script>
+</body>
+</html>

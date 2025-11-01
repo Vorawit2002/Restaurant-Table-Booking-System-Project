@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ค้นหาโต๊ะว่าง - ระบบจองโต๊ะอาหาร</title>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h2>🍽️ ระบบจองโต๊ะอาหาร</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link active">หน้าหลัก</a>
+                <a href="my-bookings.html" class="nav-link">การจองของฉัน</a>
+                <span class="nav-user" id="userDisplay"></span>
+                <button class="btn btn-logout" id="logoutBtn">ออกจากระบบ</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1>ค้นหาโต๊ะว่าง</h1>
+            <p class="subtitle">เลือกจำนวนคน วันที่ และเวลา เพื่อค้นหาโต๊ะที่เหมาะสม</p>
+        </div>
+
+        <!-- Search Form -->
+        <div class="search-card">
+            <form id="searchForm" class="search-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="numberOfGuests">จำนวนคน *</label>
+                        <input type="number" id="numberOfGuests" name="numberOfGuests" min="1" max="20" value="2" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bookingDate">วันที่ *</label>
+                        <input type="date" id="bookingDate" name="bookingDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bookingTime">เวลา *</label>
+                        <select id="bookingTime" name="bookingTime" required>
+                            <option value="">-- เลือกเวลา --</option>
+                            <option value="10:00">10:00</option>
+                            <option value="10:30">10:30</option>
+                            <option value="11:00">11:00</option>
+                            <option value="11:30">11:30</option>
+                            <option value="12:00">12:00</option>
+                            <option value="12:30">12:30</option>
+                            <option value="13:00">13:00</option>
+                            <option value="13:30">13:30</option>
+                            <option value="14:00">14:00</option>
+                            <option value="14:30">14:30</option>
+                            <option value="15:00">15:00</option>
+                            <option value="15:30">15:30</option>
+                            <option value="16:00">16:00</option>
+                            <option value="16:30">16:30</option>
+                            <option value="17:00">17:00</option>
+                            <option value="17:30">17:30</option>
+                            <option value="18:00">18:00</option>
+                            <option value="18:30">18:30</option>
+                            <option value="19:00">19:00</option>
+                            <option value="19:30">19:30</option>
+                            <option value="20:00">20:00</option>
+                            <option value="20:30">20:30</option>
+                            <option value="21:00">21:00</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">ค้นหาโต๊ะว่าง</button>
+            </form>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div id="messageContainer"></div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading" style="display: none;">
+            <p>กำลังค้นหาโต๊ะว่าง...</p>
+        </div>
+
+        <!-- Available Tables -->
+        <div id="tablesContainer" class="tables-container" style="display: none;">
+            <h2>โต๊ะที่แนะนำ</h2>
+            <div id="tablesList" class="tables-grid"></div>
+        </div>
+
+        <!-- No Results -->
+        <div id="noResultsContainer" class="no-results" style="display: none;">
+            <p>ไม่พบโต๊ะว่างสำหรับวันที่และเวลาที่เลือก</p>
+            <p class="subtitle">กรุณาลองเลือกวันที่หรือเวลาอื่น</p>
+        </div>
+    </div>
+
+    <script type="module" src="/src/js/index.js"></script>
+</body>
+</html>

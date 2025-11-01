@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จองโต๊ะ - ระบบจองโต๊ะอาหาร</title>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h2>🍽️ ระบบจองโต๊ะอาหาร</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">หน้าหลัก</a>
+                <a href="my-bookings.html" class="nav-link">การจองของฉัน</a>
+                <span class="nav-user" id="userDisplay"></span>
+                <button class="btn btn-logout" id="logoutBtn">ออกจากระบบ</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1>จองโต๊ะอาหาร</h1>
+            <p class="subtitle">กรุณาตรวจสอบข้อมูลการจองของคุณ</p>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div id="messageContainer"></div>
+
+        <!-- Booking Form -->
+        <div class="booking-card" id="bookingFormCard">
+            <form id="bookingForm" class="booking-form">
+                <div class="booking-summary">
+                    <h2>รายละเอียดการจอง</h2>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="summary-label">โต๊ะ:</span>
+                            <span class="summary-value" id="summaryTable">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bookingDate">วันที่</label>
+                        <input type="date" id="bookingDate" name="bookingDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="timeSlot">ช่วงเวลา</label>
+                        <select id="timeSlot" name="timeSlot" required>
+                            <option value="">-- เลือกช่วงเวลา --</option>
+                            <option value="11:00-13:00">11:00-13:00 (มื้อกลางวัน)</option>
+                            <option value="13:00-15:00">13:00-15:00 (มื้อกลางวัน)</option>
+                            <option value="17:00-19:00">17:00-19:00 (มื้อเย็น)</option>
+                            <option value="19:00-21:00">19:00-21:00 (มื้อเย็น)</option>
+                            <option value="21:00-23:00">21:00-23:00 (มื้อเย็น)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="numberOfGuests">จำนวนคน (สูงสุด <span id="maxCapacity">-</span> คน)</label>
+                        <input type="number" id="numberOfGuests" name="numberOfGuests" min="1" max="20" value="2" required>
+                        <small id="capacityWarning" style="color: #e74c3c; display: none;">จำนวนคนเกินความจุของโต๊ะ!</small>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary" id="confirmBtn">ยืนยันการจอง</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Booking Confirmation -->
+        <div class="confirmation-card" id="confirmationCard" style="display: none;">
+            <div class="confirmation-icon">✅</div>
+            <h2>จองสำเร็จ!</h2>
+            <p class="confirmation-message">การจองของคุณได้รับการยืนยันแล้ว</p>
+            
+            <div class="confirmation-details">
+                <div class="detail-item">
+                    <span class="detail-label">เลขที่การจอง:</span>
+                    <span class="detail-value reference" id="bookingReference">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">โต๊ะ:</span>
+                    <span class="detail-value" id="confirmTable">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">วันที่:</span>
+                    <span class="detail-value" id="confirmDate">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">เวลา:</span>
+                    <span class="detail-value" id="confirmTime">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">จำนวนคน:</span>
+                    <span class="detail-value" id="confirmGuests">-</span>
+                </div>
+            </div>
+
+            <div class="confirmation-actions">
+                <button class="btn btn-primary" id="viewBookingsBtn">ดูการจองของฉัน</button>
+                <button class="btn btn-secondary" id="backHomeBtn">กลับหน้าหลัก</button>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading" style="display: none;">
+            <p>กำลังดำเนินการจอง...</p>
+        </div>
+    </div>
+
+    <script type="module" src="/src/js/booking.js"></script>
+</body>
+</html>

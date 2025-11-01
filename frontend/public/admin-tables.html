@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการโต๊ะ - Admin</title>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h2>🍽️ ระบบจองโต๊ะอาหาร - Admin</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="admin.html" class="nav-link">Dashboard</a>
+                <a href="admin-tables.html" class="nav-link active">จัดการโต๊ะ</a>
+                <a href="admin-bookings.html" class="nav-link">จัดการการจอง</a>
+                <span class="nav-user" id="userDisplay"></span>
+                <button type="button" class="btn btn-logout" id="logoutBtn">ออกจากระบบ</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1>จัดการโต๊ะ</h1>
+            <p class="subtitle">เพิ่ม แก้ไข หรือลบโต๊ะในระบบ</p>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div id="messageContainer"></div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading hidden">
+            <p>กำลังโหลดข้อมูล...</p>
+        </div>
+
+        <!-- Admin Content -->
+        <div class="admin-content">
+            <!-- Tables List -->
+            <div class="tables-section">
+                <h2>รายการโต๊ะทั้งหมด</h2>
+                <table class="tables-table">
+                    <thead>
+                        <tr>
+                            <th>หมายเลขโต๊ะ</th>
+                            <th>จำนวนที่นั่ง</th>
+                            <th>การจัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablesTableBody">
+                        <!-- Tables will be loaded here -->
+                    </tbody>
+                </table>
+                <div id="noTablesMessage" class="empty-state hidden">
+                    <div class="empty-state-icon">🪑</div>
+                    <h3>ยังไม่มีโต๊ะในระบบ</h3>
+                    <p>เริ่มต้นโดยการเพิ่มโต๊ะใหม่</p>
+                </div>
+            </div>
+
+            <!-- Add/Edit Form -->
+            <div class="form-section">
+                <h2 id="formTitle">เพิ่มโต๊ะใหม่</h2>
+                <form id="tableForm" class="admin-form">
+                    <input type="hidden" id="tableId" name="tableId">
+                    
+                    <div class="form-group">
+                        <label for="tableNumber">หมายเลขโต๊ะ *</label>
+                        <input 
+                            type="text" 
+                            id="tableNumber" 
+                            name="tableNumber" 
+                            placeholder="เช่น A1, B2, 101" 
+                            required
+                            maxlength="10"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="capacity">จำนวนที่นั่ง *</label>
+                        <input 
+                            type="number" 
+                            id="capacity" 
+                            name="capacity" 
+                            placeholder="เช่น 2, 4, 6" 
+                            min="1" 
+                            max="20"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-actions-admin">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            เพิ่มโต๊ะ
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancelBtn">
+                            ยกเลิก
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h3>ยืนยันการลบโต๊ะ</h3>
+            <p id="deleteMessage">คุณแน่ใจหรือไม่ที่จะลบโต๊ะนี้?</p>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">ยกเลิก</button>
+                <button type="button" class="btn btn-delete" id="confirmDeleteBtn">ลบโต๊ะ</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/js/admin-tables.js"></script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - ระบบจองโต๊ะอาหาร</title>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h2>🍽️ ระบบจองโต๊ะอาหาร - Admin</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="admin.html" class="nav-link active">Dashboard</a>
+                <a href="admin-tables.html" class="nav-link">จัดการโต๊ะ</a>
+                <a href="admin-bookings.html" class="nav-link">จัดการการจอง</a>
+                <span class="nav-user" id="userDisplay"></span>
+                <button type="button" class="btn btn-logout" id="logoutBtn">ออกจากระบบ</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1>Admin Dashboard</h1>
+            <p class="subtitle">ภาพรวมระบบจองโต๊ะอาหาร</p>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div id="messageContainer"></div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading hidden">
+            <p>กำลังโหลดข้อมูล...</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-content">
+                    <h3 id="todayBookingsCount">-</h3>
+                    <p>การจองวันนี้</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <h3 id="confirmedBookingsCount">-</h3>
+                    <p>การจองที่ยืนยันแล้ว</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">❌</div>
+                <div class="stat-content">
+                    <h3 id="cancelledBookingsCount">-</h3>
+                    <p>การจองที่ยกเลิก</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🪑</div>
+                <div class="stat-content">
+                    <h3 id="totalTablesCount">-</h3>
+                    <p>จำนวนโต๊ะทั้งหมด</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h2>เมนูจัดการ</h2>
+            <div class="actions-grid">
+                <a href="admin-tables.html" class="action-card">
+                    <div class="action-icon">🪑</div>
+                    <h3>จัดการโต๊ะ</h3>
+                    <p>เพิ่ม แก้ไข หรือลบโต๊ะในระบบ</p>
+                </a>
+                <a href="admin-bookings.html" class="action-card">
+                    <div class="action-icon">📋</div>
+                    <h3>จัดการการจอง</h3>
+                    <p>ดูและจัดการการจองทั้งหมด</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Today's Bookings -->
+        <div class="today-bookings">
+            <h2>การจองวันนี้</h2>
+            <div id="todayBookingsList" class="bookings-list"></div>
+            <div id="noBookingsToday" class="empty-state hidden">
+                <div class="empty-state-icon">📅</div>
+                <h3>ไม่มีการจองวันนี้</h3>
+                <p>ยังไม่มีการจองสำหรับวันนี้</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/js/admin.js"></script>
+</body>
+</html>

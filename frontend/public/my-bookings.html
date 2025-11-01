@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การจองของฉัน - ระบบจองโต๊ะอาหาร</title>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h2>🍽️ ระบบจองโต๊ะอาหาร</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">หน้าหลัก</a>
+                <a href="my-bookings.html" class="nav-link active">การจองของฉัน</a>
+                <span class="nav-user" id="userDisplay"></span>
+                <button class="btn btn-logout" id="logoutBtn">ออกจากระบบ</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1>การจองของฉัน</h1>
+            <p class="subtitle">ดูและจัดการการจองโต๊ะของคุณ</p>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <label for="statusFilter">กรองตามสถานะ:</label>
+            <select id="statusFilter">
+                <option value="all">ทั้งหมด</option>
+                <option value="upcoming">การจองที่กำลังจะมาถึง</option>
+                <option value="past">การจองที่ผ่านมา</option>
+                <option value="cancelled">ยกเลิกแล้ว</option>
+            </select>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div id="messageContainer"></div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading" style="display: none;">
+            <p>กำลังโหลดข้อมูล...</p>
+        </div>
+
+        <!-- Bookings List -->
+        <div class="bookings-container" id="bookingsContainer">
+            <div id="bookingsList" class="bookings-list"></div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">📅</div>
+            <h3>ไม่มีการจอง</h3>
+            <p>คุณยังไม่มีการจองโต๊ะ</p>
+            <a href="index.html" class="btn btn-primary">จองโต๊ะเลย</a>
+        </div>
+    </div>
+
+    <!-- Cancel Confirmation Modal -->
+    <div id="cancelModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>ยืนยันการยกเลิก</h3>
+            <p>คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการจองนี้?</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelModalNo">ไม่</button>
+                <button class="btn btn-cancel" id="cancelModalYes">ใช่, ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/js/my-bookings.js"></script>
+</body>
+</html>

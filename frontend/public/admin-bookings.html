@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการการจอง - Admin</title>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h2>🍽️ ระบบจองโต๊ะอาหาร - Admin</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="admin.html" class="nav-link">Dashboard</a>
+                <a href="admin-tables.html" class="nav-link">จัดการโต๊ะ</a>
+                <a href="admin-bookings.html" class="nav-link active">จัดการการจอง</a>
+                <span class="nav-user" id="userDisplay"></span>
+                <button type="button" class="btn btn-logout" id="logoutBtn">ออกจากระบบ</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1>จัดการการจอง</h1>
+            <p class="subtitle">ดูและจัดการการจองทั้งหมดในระบบ</p>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div id="messageContainer"></div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <form id="filterForm" class="filter-form">
+                <div class="form-group">
+                    <label for="filterDate">วันที่</label>
+                    <input type="date" id="filterDate" name="filterDate">
+                </div>
+                <div class="form-group">
+                    <label for="filterStatus">สถานะ</label>
+                    <select id="filterStatus" name="filterStatus">
+                        <option value="">ทั้งหมด</option>
+                        <option value="confirmed">ยืนยันแล้ว</option>
+                        <option value="cancelled">ยกเลิกแล้ว</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">ค้นหา</button>
+                <button type="button" class="btn btn-secondary" id="resetBtn">รีเซ็ต</button>
+            </form>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading hidden">
+            <p>กำลังโหลดข้อมูล...</p>
+        </div>
+
+        <!-- Bookings Section -->
+        <div class="bookings-section">
+            <h2>รายการจองทั้งหมด</h2>
+            <div id="bookingsList" class="bookings-list"></div>
+            <div id="noBookingsMessage" class="empty-state hidden">
+                <div class="empty-state-icon">📋</div>
+                <h3>ไม่พบการจอง</h3>
+                <p>ไม่มีการจองที่ตรงกับเงื่อนไขที่เลือก</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/js/admin-bookings.js"></script>
+</body>
+</html>

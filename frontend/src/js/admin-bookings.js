@@ -1,0 +1,216 @@
+// Admin Bookings Management
+
+import '../css/main.css';
+import { ApiClient } from './api-client.js';
+import { AuthService } from './auth-service.js';
+
+const apiClient = new ApiClient();
+
+// Check authentication and admin role
+function checkAdminAccess() {
+  if (!AuthService.isLoggedIn()) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  if (!AuthService.isAdmin()) {
+    alert('คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // Display user info
+  const user = AuthService.getUserFromToken();
+  if (user) {
+    const userDisplay = document.getElementById('userDisplay');
+    if (userDisplay) {
+      userDisplay.textContent = `Admin: ${user.fullName}`;
+    }
+  }
+}
+
+// Display message
+function showMessage(message, type) {
+  const container = document.getElementById('messageContainer');
+  if (!container) return;
+
+  const messageDiv = document.createElement('div');
+  messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
+  messageDiv.textContent = message;
+  
+  container.innerHTML = '';
+  container.appendChild(messageDiv);
+
+  // Auto-hide after 5 seconds
+  setTimeout(() => {
+    messageDiv.remove();
+  }, 5000);
+}
+
+// Show/hide loading indicator
+function setLoading(isLoading) {
+  const loadingIndicator = document.getElementById('loadingIndicator');
+  if (loadingIndicator) {
+    if (isLoading) {
+      loadingIndicator.classList.remove('hidden');
+    } else {
+      loadingIndicator.classList.add('hidden');
+    }
+  }
+}
+
+// Format date for display
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('th-TH', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
+// Format datetime for display
+function formatDateTime(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleString('th-TH', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+// Load bookings with filters
+async function loadBookings(date, status) {
+  try {
+    setLoading(true);
+    const bookings = await apiClient.getAllBookings(date, status);
+    displayBookings(bookings);
+  } catch (error) {
+    showMessage(`เกิดข้อผิดพลาด: ${error instanceof Error ? error.message : 'ไม่สามารถโหลดข้อมูลการจองได้'}`, 'error');
+  } finally {
+    setLoading(false);
+  }
+}
+
+// Display bookings
+function displayBookings(bookings) {
+  const bookingsList = document.getElementById('bookingsList');
+  const noBookingsMessage = document.getElementById('noBookingsMessage');
+
+  if (!bookingsList || !noBookingsMessage) return;
+
+  bookingsList.innerHTML = '';
+
+  if (bookings.length === 0) {
+    noBookingsMessage.classList.remove('hidden');
+    return;
+  }
+
+  noBookingsMessage.classList.add('hidden');
+
+  // Sort bookings by date and time (newest first)
+  const sortedBookings = [...bookings].sort((a, b) => {
+    const dateCompare = b.bookingDate.localeCompare(a.bookingDate);
+    if (dateCompare !== 0) return dateCompare;
+    return b.timeSlot.localeCompare(a.timeSlot);
+  });
+
+  sortedBookings.forEach(booking => {
+    const bookingItem = document.createElement('div');
+    bookingItem.className = 'booking-item';
+    
+    const statusClass = booking.status === 'confirmed' ? 'status-confirmed' : 'status-cancelled';
+    const statusText = booking.status === 'confirmed' ? 'ยืนยันแล้ว' : 'ยกเลิกแล้ว';
+
+    bookingItem.innerHTML = `
+      <div class="booking-info">
+        <div class="booking-field">
+          <label>เลขที่การจอง</label>
+          <span class="booking-reference">${booking.reference}</span>
+        </div>
+        <div class="booking-field">
+          <label>ชื่อลูกค้า</label>
+          <span>${booking.userName}</span>
+        </div>
+        <div class="booking-field">
+          <label>วันที่จอง</label>
+          <span>${formatDate(booking.bookingDate)}</span>
+        </div>
+        <div class="booking-field">
+          <label>ช่วงเวลา</label>
+          <span>${booking.timeSlot}</span>
+        </div>
+        <div class="booking-field">
+          <label>โต๊ะ</label>
+          <span>${booking.tableNumber}</span>
+        </div>
+        <div class="booking-field">
+          <label>จำนวนคน</label>
+          <span>${booking.numberOfGuests} คน</span>
+        </div>
+        <div class="booking-field">
+          <label>สถานะ</label>
+          <span class="booking-status ${statusClass}">${statusText}</span>
+        </div>
+        <div class="booking-field">
+          <label>วันที่สร้าง</label>
+          <span>${formatDateTime(booking.createdAt)}</span>
+        </div>
+      </div>
+    `;
+
+    bookingsList.appendChild(bookingItem);
+  });
+}
+
+// Handle filter form submission
+async function handleFilterSubmit(event) {
+  event.preventDefault();
+
+  const form = event.target;
+  const formData = new FormData(form);
+
+  const date = formData.get('filterDate') || undefined;
+  const status = formData.get('filterStatus') || undefined;
+
+  await loadBookings(date, status);
+}
+
+// Handle reset filters
+async function handleResetFilters() {
+  const filterForm = document.getElementById('filterForm');
+  if (filterForm) {
+    filterForm.reset();
+  }
+
+  await loadBookings();
+}
+
+// Handle logout
+function handleLogout() {
+  apiClient.logout();
+  window.location.href = 'login.html';
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', () => {
+  checkAdminAccess();
+  loadBookings();
+
+  const filterForm = document.getElementById('filterForm');
+  if (filterForm) {
+    filterForm.addEventListener('submit', handleFilterSubmit);
+  }
+
+  const resetBtn = document.getElementById('resetBtn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', handleResetFilters);
+  }
+
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', handleLogout);
+  }
+});
