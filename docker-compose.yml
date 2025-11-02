@@ -3,10 +3,12 @@ services:
   db:
     image: postgres:15-alpine
     container_name: restaurant_booking_db
+    platform: linux/amd64
     environment:
       POSTGRES_DB: restaurant_booking
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
     volumes:
@@ -18,6 +20,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   # Backend API (.NET 8)
   api:
